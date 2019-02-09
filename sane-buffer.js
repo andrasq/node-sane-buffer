@@ -21,8 +21,6 @@ function OBuffer( arg, encOrOffs, length ) {
     // create as type Buffer, but patch it up to make it appear instanceof OBuffer
     return _typeconvert(OBuffer._create(arg, encOrOffs, length));
 }
-
-// inherit instance methods
 util.inherits(OBuffer, Buffer);
 
 // wrapper builder instance methods (do after the inerits, old node clears prototype)

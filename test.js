@@ -10,6 +10,8 @@ var Boffur = require('./');
 var nodeVersion = parseInt(process.version.slice(1));
 var realVersion = process.version;
 
+Boffur._install();
+
 module.exports = {
     tearDown: function(done) {
         setVersion(realVersion);
@@ -19,6 +21,7 @@ module.exports = {
     'should uninstall': function(t) {
         Boffur._uninstall();
         t.equal(Buffer, SysBuffer);
+        Boffur._install();
         t.done();
     },
 
@@ -125,7 +128,6 @@ module.exports = {
 
     'edge cases': {
         setUp: function(done) {
-            Boffur._uninstall();
             this.savedMethods = {};
             for (var k in SysBuffer) {
                 Object.defineProperty(this.savedMethods, k, Object.getOwnPropertyDescriptor(SysBuffer, k));
@@ -135,7 +137,6 @@ module.exports = {
 
         tearDown: function(done) {
             for (var k in this.savedMethods) Object.defineProperty(SysBuffer, k, Object.getOwnPropertyDescriptor(this.savedMethods, k));
-            Boffur._install();
             done();
         },
 
@@ -146,7 +147,7 @@ module.exports = {
 
         'should use polyfills as necessary': function(t) {
             // test polyfill handling and coverage by faking the node version
-            // the version trick will only work with node v6-v9, or v10-v11 with deprecation warnings
+            // the version trick will work with node v6-v9, or v10-v11 with deprecation warnings
             if (nodeVersion <= 5 || nodeVersion >= 10) t.skip();
 
             // before factory methods
@@ -208,34 +209,37 @@ module.exports = {
         },
 
         'should wrapper builders': function(t) {
+            Boffur._uninstall();
             setVersion('v5.8.0');
 
             if (SysBuffer.concat) {
                 t.unrequire('./');
-                var Boffur = require('./')._install();
-                t.ok(!Boffur.allocUnsafeSlow);
-                var buf = Buffer.concat([new Buffer('A'), new Buffer('B')]);
-                t.ok(buf instanceof Boffur);
+                var OBuff = require('./');
+                t.ok(!OBuff.allocUnsafeSlow);
+                var buf = OBuff.concat([makeSysBuffer('A'), makeSysBuffer('B')]);
+                t.ok(buf instanceof OBuff);
+                t.ok(buf instanceof Buffer);
             }
 
             setVersion('v9.8.0');
 
             if (SysBuffer.allocUnsafeSlow) {
                 t.unrequire('./');
-                var Boffur = require('./')._install();
-                t.ok(typeof Boffur.allocUnsafeSlow === 'function');
-                t.ok(Boffur.allocUnsafeSlow(0) instanceof Boffur);
+                var OBuff = require('./')._install();
+                t.ok(typeof OBuff.allocUnsafeSlow === 'function');
+                t.ok(OBuff.allocUnsafeSlow(0) instanceof OBuff);
             }
             if (SysBuffer.concat) {
-                t.ok(Buffer.concat([new Buffer('A'), new Buffer('B')]) instanceof Boffur);
+                t.ok(Buffer.concat([makeSysBuffer('A'), makeSysBuffer('B')]) instanceof OBuff);
             }
 
+            Boffur._install();
             t.done();
         },
 
-        'only makes Buffers instances of OBuffer': function(t) {
-            var obj = {};
+        'makes only Buffer instances into OBuffer': function(t) {
             Boffur._install();
+            var obj = new Date();
             // OBuffer.concat calls Buffer.concat and patches the result Buffer
             t.stubOnce(SysBuffer, 'concat', function() { return obj });
             if (SysBuffer.concat) {
@@ -311,8 +315,11 @@ module.exports = {
 }
 
 // run the OBuffer speed tests on Buffers too
-module.exports['speed Buffer'] = _copyObject({}, module.exports['speed OBuffer']);
-module.exports['speed Buffer'].setUp = function(done) { this.Buffer = SysBuffer; done() };
+// Note: this will print a deprecation warning on node-v10 and up.
+if (nodeVersion < 10) {
+    module.exports['speed Buffer'] = _copyObject({}, module.exports['speed OBuffer']);
+    module.exports['speed Buffer'].setUp = function(done) { this.Buffer = SysBuffer; done() };
+}
 
 function _copyObject(to, from) {
     for (var k in from) to[k] = from[k];
