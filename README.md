@@ -64,6 +64,14 @@ uses `new Buffer` or calls a factory method, depending on which is supported in 
 of nodejs.
 
 
+Caveats
+-------
+
+- if `_install`-ing, if I missed some ways a Buffer can be created it's possible that a system
+  Buffer will be returned.  This buffer will fail an `instanceof Buffer` test, because
+  installing shadows the system `Buffer` with `OBuffer`.
+
+
 Testing
 -------
 
