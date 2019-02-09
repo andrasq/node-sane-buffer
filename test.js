@@ -220,11 +220,12 @@ module.exports = {
 
         'should wrapper builders': function(t) {
             OBuffer._uninstall();
+
             setVersion('v5.8.0');
+            t.unrequire('./');
+            var OBuff = require('./');
 
             if (SysBuffer.concat) {
-                t.unrequire('./');
-                var OBuff = require('./');
                 t.ok(!OBuff.allocUnsafeSlow);
                 var buf = OBuff.concat([makeSysBuffer('A'), makeSysBuffer('B')]);
                 t.ok(buf instanceof OBuff);
@@ -232,15 +233,15 @@ module.exports = {
             }
 
             setVersion('v9.8.0');
+            t.unrequire('./');
+            var OBuff = require('./')._install();
 
             if (SysBuffer.allocUnsafeSlow) {
-                t.unrequire('./');
-                var OBuff = require('./')._install();
                 t.ok(typeof OBuff.allocUnsafeSlow === 'function');
                 t.ok(OBuff.allocUnsafeSlow(0) instanceof OBuff);
             }
             if (SysBuffer.concat) {
-                t.ok(Buffer.concat([makeSysBuffer('A'), makeSysBuffer('B')]) instanceof OBuff);
+                t.ok(Buffer.concat([makeSysBuffer('A'), new OBuff('B')]) instanceof OBuff);
             }
 
             OBuffer._install();
@@ -285,7 +286,12 @@ module.exports = {
             if (buf.swap16) t.ok(buf.swap16(), buf);
 
             t.done();
-        }
+        },
+
+        'should support byteLength': function(t) {
+            t.equal(OBuffer.byteLength("hi\u9876"), 5);
+            t.done();
+        },
     },
 
     'speed OBuffer': {
