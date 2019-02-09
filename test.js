@@ -6,11 +6,11 @@
 'use strict';
 
 var SysBuffer = require('buffer').Buffer;
-var Boffur = require('./');
+var OBuffer = require('./');
 var nodeVersion = parseInt(process.version.slice(1));
 var realVersion = process.version;
 
-Boffur._install();
+OBuffer._install();
 
 module.exports = {
     tearDown: function(done) {
@@ -19,38 +19,38 @@ module.exports = {
     },
 
     'should uninstall': function(t) {
-        Boffur._uninstall();
+        OBuffer._uninstall();
         t.equal(Buffer, SysBuffer);
-        Boffur._install();
+        OBuffer._install();
         t.done();
     },
 
     'should install': function(t) {
-        Boffur._uninstall();
-        Boffur._install();
-        t.equal(Buffer, Boffur);
+        OBuffer._uninstall();
+        OBuffer._install();
+        t.equal(Buffer, OBuffer);
         t.done();
     },
 
     'should construct Buffer from string': function(t) {
-        var buf = new Boffur("hello");
+        var buf = new OBuffer("hello");
         t.ok(buf instanceof SysBuffer);
-        t.ok(buf instanceof Boffur);
+        t.ok(buf instanceof OBuffer);
         t.ok(buf instanceof SysBuffer);
         t.done();
     },
 
     'should construct Buffer as a function': function(t) {
-        var buf = Boffur("hello");
+        var buf = OBuffer("hello");
         t.ok(buf instanceof SysBuffer);
         t.ok(buf instanceof Buffer);
-        t.ok(buf instanceof Boffur);
+        t.ok(buf instanceof OBuffer);
         t.done();
     },
 
     'should return length': function(t) {
-        t.equal(Boffur("hi").length, 2);
-        t.equal(Boffur(4).length, 4);
+        t.equal(OBuffer("hi").length, 2);
+        t.equal(OBuffer(4).length, 4);
         t.done();
     },
 
@@ -58,7 +58,7 @@ module.exports = {
         for (var name in SysBuffer) {
             // the factory methods have been polyfilled
             if (name in { from: 1, alloc: 1, allocUnsafe: 1, concat: 1, allocUnsafeSlow: 1 }) continue;
-            if (typeof SysBuffer[name] === 'function') t.equal(Boffur[name], SysBuffer[name]);
+            if (typeof SysBuffer[name] === 'function') t.equal(OBuffer[name], SysBuffer[name]);
         }
         t.done();
     },
@@ -109,19 +109,19 @@ module.exports = {
         // before factory methods
         t.unrequire('./');
         setVersion('v5.8.0');
-        var Buffer = require('./');
-        t.throws(function() { new Buffer() });
+        var Buff = require('./');
+        t.throws(function() { new Buff() });
 
         t.unrequire('./');
         setVersion('v8.11.4');
-        var Buffer = require('./');
-        t.throws(function() { new Buffer() });
+        var Buff = require('./');
+        t.throws(function() { new Buff() });
 
         // after deprecation
         t.unrequire('./');
         setVersion('v11.0.0');
-        var Buffer = require('./');
-        t.throws(function() { new Buffer() });
+        var Buff = require('./');
+        t.throws(function() { new Buff() });
 
         t.done();
     },
@@ -141,7 +141,7 @@ module.exports = {
         },
 
         'should throw with no args': function(t) {
-            t.throws(function(){ Boffur() }, /must|needs/);
+            t.throws(function(){ OBuffer() }, /must|needs/);
             t.done();
         },
 
@@ -153,63 +153,73 @@ module.exports = {
             // before factory methods
             setVersion('v5.8.0');
             t.unrequire('./');
-            var Boffur = require('./');
-            testPolyfill();
+            var OBuff = require('./');
+            testPolyfill(OBuff);
+
+            // with both
+            setVersion('v9.8.0');
+            t.unrequire('./');
+            var OBuff = require('./');
+            testPolyfill(OBuff);
 
             // after deprecation
             setVersion('v11.0.0');
             t.unrequire('./');
-            var Boffur = require('./');
-            testPolyfill();
+            var OBuff = require('./');
+            testPolyfill(OBuff);
 
-            function testPolyfill() {
+            function testPolyfill(OBuffer) {
                 var tempVersion = parseInt(process.version.slice(1));
 
-                t.ok(typeof Boffur.from === 'function');
-                t.ok(typeof Boffur.alloc === 'function');
-                t.ok(typeof Boffur.allocUnsafe === 'function');
-                t.ok(Boffur.from != SysBuffer.from);
-                t.ok(Boffur.alloc != SysBuffer.alloc);
-                t.ok(Boffur.allocUnsafe != SysBuffer.allocUnsafe);
+                t.ok(typeof OBuffer.from === 'function');
+                t.ok(typeof OBuffer.alloc === 'function');
+                t.ok(typeof OBuffer.allocUnsafe === 'function');
+                t.ok(OBuffer.from != SysBuffer.from);
+                t.ok(OBuffer.alloc != SysBuffer.alloc);
+                t.ok(OBuffer.allocUnsafe != SysBuffer.allocUnsafe);
 
-                var buf = Boffur.from("hello");
+                var buf = OBuffer.from("hello");
                 t.ok(buf instanceof SysBuffer);
-                t.deepEqual(buf, new Boffur("hello"));
+                t.deepEqual(buf, new OBuffer("hello"));
 
-                var emptyBuf = new Boffur(7); emptyBuf.fill(0);
-                var buf = Boffur.alloc(7);
+                var emptyBuf = new OBuffer(7); emptyBuf.fill(0);
+                var buf = OBuffer.alloc(7);
                 t.ok(buf instanceof SysBuffer);
                 t.deepEqual(buf, emptyBuf);
 
-                var buf = Boffur.allocUnsafe(7);
+                var buf = OBuffer.allocUnsafe(7);
                 t.ok(buf instanceof SysBuffer);
                 t.equal(buf.length, 7);
 
-                Boffur.safe = true;
-                var buf = new Boffur(777);
+                OBuffer.safe = true;
+                var buf = new OBuffer(777);
+                t.equal(buf.length, 777);
                 for (var i=0; i<777; i++) t.equal(buf[i], 0);
 
-                var buf = new Boffur([0x41, 0x42, 0x43]);
+                var buf = new OBuffer([0x41, 0x42, 0x43]);
                 t.equal(buf.toString(), "ABC");
 
                 var arr = new ArrayBuffer(7);
-                var buf = new Boffur(arr, 0, 5);
+                var buf = new OBuffer(arr, 0, 5);
                 for (var i=0; i<7; i++) buf[i] = 65 + i;
                 t.equal(buf.toString(), "ABCDE");
                 var buf2 = makeSysBuffer(buf);
                 t.equal(buf2.toString(), "ABCDE");
+                // FIXME: what should arr convert to after was modified?  getting len 5 string
+                // var buf3 = new OBuffer(arr, 0, 7);
+                // t.equal(buf2.toString().length, "ABCDE");
 
-                var buf = new Boffur(new Boffur("ABC"));
+                var buf = new OBuffer(new OBuffer("ABC"));
                 t.equal(buf.toString(), "ABC");
 
-                t.throws(function() { new Boffur(/^/) });
+                t.throws(function() { new OBuffer(/^/) });
             }
 
             t.done();
         },
 
         'should wrapper builders': function(t) {
-            Boffur._uninstall();
+            OBuffer._uninstall();
             setVersion('v5.8.0');
 
             if (SysBuffer.concat) {
@@ -233,18 +243,18 @@ module.exports = {
                 t.ok(Buffer.concat([makeSysBuffer('A'), makeSysBuffer('B')]) instanceof OBuff);
             }
 
-            Boffur._install();
+            OBuffer._install();
             t.done();
         },
 
         'makes only Buffer instances into OBuffer': function(t) {
-            Boffur._install();
+            OBuffer._install();
             var obj = new Date();
             // OBuffer.concat calls Buffer.concat and patches the result Buffer
             t.stubOnce(SysBuffer, 'concat', function() { return obj });
             if (SysBuffer.concat) {
                 var buf = Buffer.concat([new Buffer('A'), new Buffer('B')]);
-                t.ok(!(buf instanceof Boffur));
+                t.ok(!(buf instanceof OBuffer));
                 t.equal(buf, obj);
             }
             t.done();
@@ -254,24 +264,24 @@ module.exports = {
     'interoperability': {
         'should work as Buffer': function(t) {
             if (SysBuffer.concat) {
-                var buf = Boffur.concat([new Buffer("A"), makeSysBuffer("B"), new Boffur("C")]);
+                var buf = OBuffer.concat([new Buffer("A"), makeSysBuffer("B"), new OBuffer("C")]);
                 t.equal(buf.toString(), "ABC");
                 t.ok(buf instanceof SysBuffer);
                 t.ok(buf instanceof Buffer);
-                t.ok(buf instanceof Boffur);
+                t.ok(buf instanceof OBuffer);
             }
 
-            var buf = Boffur("hello").slice(2, 4);
+            var buf = OBuffer("hello").slice(2, 4);
             t.equal(buf.toString(), "ll");
             t.ok(buf instanceof SysBuffer);
-            t.ok(buf instanceof Boffur);
+            t.ok(buf instanceof OBuffer);
 
-            var buf = Boffur("ABC");
+            var buf = OBuffer("ABC");
             t.equal(buf[0], 65);
             t.equal(buf[1], 66);
             t.equal(buf[2], 67);
 
-            var buf = Boffur([1, 2, 3, 4]);
+            var buf = OBuffer([1, 2, 3, 4]);
             if (buf.swap16) t.ok(buf.swap16(), buf);
 
             t.done();
@@ -280,7 +290,7 @@ module.exports = {
 
     'speed OBuffer': {
         setUp: function(done) {
-            this.Buffer = Boffur;
+            this.Buffer = OBuffer;
             done();
         },
 
