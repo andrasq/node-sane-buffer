@@ -1,0 +1,17 @@
+{
+  "name": "sane-buffer",
+  "description": "normalize new Buffer() semantics across nodejs versions",
+  "version": "0.9.0",
+  "main": "sane-buffer.js",
+  "license": "Apache-2.0",
+  "keywords": [ "legacy", "Buffer", "deprecated", "constructor", "semantics", "from", "alloc" ],
+  "readme": "see README.md in the repo",
+
+  "scripts": {
+    "prepublish": "mkdir -p .git/ar/; mv .trav* test.js .git/ar || true",
+    "postpublish": "mv .git/ar/.trav* .git/ar/test.js .",
+    "test": "qnit test.js",
+    "coverage": "nyc -r text -r lcov npm test",
+    "clean": "rm -rf .nyc_output/ coverage/ npm-debug.log"
+  }
+}
