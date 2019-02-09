@@ -322,7 +322,7 @@ function _copyObject(to, from) {
 function makeSysBuffer(a, b, c) {
     // node-v4.4 and v5.8 had a weird from() that broke on strings with "not a typed array" error
     if (nodeVersion < 10) return new SysBuffer(a, b, c);
-    return (typeof a === 'number') ? SysBuffer.alloc(a) : sysBuffer.from(a, b, c);
+    return (typeof a === 'number') ? SysBuffer.alloc(a) : SysBuffer.from(a, b, c);
 }
 
 function setVersion(ver) {
