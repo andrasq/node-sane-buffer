@@ -1,5 +1,8 @@
 sane-buffer
 ===========
+[![Build Status](https://api.travis-ci.org/andrasq/node-sane-buffer.svg?branch=master)](https://travis-ci.org/andrasq/node-sane-buffer?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/andrasq/node-sane-buffer/badge.svg?branch=master)](https://coveralls.io/github/andrasq/node-sane-buffer?branch=master)
+
 
 Fix the `Buffer` constructor semantics to not break legacy code.  Unlike packages that
 polyfill the new API, this one polyfills both new (for older nodejs that is missing calls)
