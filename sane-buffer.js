@@ -23,7 +23,7 @@ function OBuffer( arg, encOrOffs, length ) {
 }
 util.inherits(OBuffer, Buffer);
 
-// wrapper builder instance methods (do after the inerits, old node clears prototype)
+// wrapper instance builder methods too (do after the inerits, old node clears prototype)
 OBuffer.prototype.slice = function(base, bound) { return _typeconvert(Buffer.prototype.slice.call(this, base, bound)) };
 
 // copy class methods
@@ -33,10 +33,10 @@ for (var k in Buffer) OBuffer[k] = Buffer[k];
 OBuffer.from = _typewrapper('from', function(a, b, c) { return new OBuffer(a, b, c) });
 OBuffer.alloc = _typewrapper('alloc', function(n) { return _fill0(new OBuffer(n)) });
 OBuffer.allocUnsafe = _typewrapper('allocUnsafe', function(n) { return new OBuffer(n) });
+// patch returned Buffers to make them appear instanceof OBuffer
 OBuffer.allocUnsafeSlow = (nodeVersion >= 6 && Buffer.allocUnsafeSlow) ? function(size) { return _typeconvert(Buffer.allocUnsafeSlow(size)) } : undefined;
 OBuffer.concat = function(list, length) { return _typeconvert(Buffer.concat(list, length)) };
 
-// patch returned Buffers to make them appear instanceof OBuffer
 function _typeconvert(obj) { if (obj && obj.constructor === Buffer) obj.__proto__ = OBuffer.prototype; return obj }
 function _typewrapper(name, poly) { return (nodeVersion >= 6 && Buffer[name]) ? function(a, b, c) { return _typeconvert(Buffer[name](a, b, c)) } : poly }
 function _fill0(buf) { var len = buf.length; for (var i=0; i<len; i++) buf[i] = 0; return buf }

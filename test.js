@@ -232,15 +232,17 @@ module.exports = {
                 t.ok(buf instanceof Buffer);
             }
 
-            setVersion('v9.8.0');
+            // note: spoofing node-v6,7,8,9 can result in a deprecation warning
+            setVersion('v10.8.0');
             t.unrequire('./');
-            var OBuff = require('./')._install();
+            var OBuff = require('./');
 
             if (SysBuffer.allocUnsafeSlow) {
                 t.ok(typeof OBuff.allocUnsafeSlow === 'function');
                 t.ok(OBuff.allocUnsafeSlow(0) instanceof OBuff);
             }
             if (SysBuffer.concat) {
+                OBuff._install();
                 t.ok(Buffer.concat([makeSysBuffer('A'), new OBuff('B')]) instanceof OBuff);
             }
 
@@ -263,7 +265,7 @@ module.exports = {
     },
 
     'interoperability': {
-        'should work as Buffer': function(t) {
+        'should concat Buffers': function(t) {
             if (SysBuffer.concat) {
                 var buf = OBuffer.concat([new Buffer("A"), makeSysBuffer("B"), new OBuffer("C")]);
                 t.equal(buf.toString(), "ABC");
@@ -271,19 +273,36 @@ module.exports = {
                 t.ok(buf instanceof Buffer);
                 t.ok(buf instanceof OBuffer);
             }
+            t.done();
+        },
 
-            var buf = OBuffer("hello").slice(2, 4);
-            t.equal(buf.toString(), "ll");
-            t.ok(buf instanceof SysBuffer);
-            t.ok(buf instanceof OBuffer);
-
+        'should access contents with subscript notation': function(t) {
             var buf = OBuffer("ABC");
             t.equal(buf[0], 65);
             t.equal(buf[1], 66);
             t.equal(buf[2], 67);
+            t.done();
+        },
 
+        'should run swap16': function(t) {
             var buf = OBuffer([1, 2, 3, 4]);
-            if (buf.swap16) t.ok(buf.swap16(), buf);
+            if (buf.swap16) t.equal(buf.swap16(), buf);
+            t.done();
+        },
+
+        'should slice like Buffer': function(t) {
+            var buf;
+
+            buf = OBuffer("hello").slice(2, 4);
+            t.equal(buf.toString(), "ll");
+            t.ok(buf instanceof SysBuffer);
+            t.ok(buf instanceof OBuffer);
+
+            buf = OBuffer("hello").slice(1);
+            t.equal(String(buf), "ello");
+
+            buf = OBuffer("hello").slice();
+            t.equal(buf + '', "hello");
 
             t.done();
         },
