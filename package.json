@@ -8,9 +8,9 @@
   "readme": "see README.md in the repo",
 
   "scripts": {
-    "prepublish": "mkdir -p .git/ar/; mv .trav* test.js .git/ar || true",
+    "prepublishOnly": "mv .trav* test.js .git/ar",
     "postpublish": "mv .git/ar/.trav* .git/ar/test.js .",
-    "test": "qnit test.js",
+    "test": "pwd ; ls -ls ; qnit test*.js",
     "coverage": "nyc -r text -r lcov npm test",
     "clean": "rm -rf .nyc_output/ coverage/ npm-debug.log"
   }
