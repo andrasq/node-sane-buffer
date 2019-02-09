@@ -6,6 +6,7 @@
   "license": "Apache-2.0",
   "keywords": [ "legacy", "Buffer", "deprecated", "constructor", "semantics", "from", "alloc" ],
   "readme": "see README.md in the repo",
+  "author": "andrasq",
 
   "scripts": {
     "prepublishOnly": "mv .trav* test.js .git/ar",
