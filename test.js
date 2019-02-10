@@ -302,7 +302,7 @@ module.exports = {
             buf = OBuffer("hello").slice(1);
             t.equal(String(buf), "ello");
 
-            buf = OBuffer("hello").slice();
+            buf = OBuffer("hello").slice(0);
             t.equal(buf + '', "hello");
 
             t.done();
@@ -340,6 +340,7 @@ module.exports = {
 
         'should support toJSON': function(t) {
             var buf = OBuffer([1, 2]);
+            if (!buf.toJSON && nodeVersion < 1) t.skip();  // not in node-v0.8
             var json = buf.toJSON();
             t.equal(typeof json, 'object');
             if (json.type) t.deepEqual(json, { type: 'Buffer', data: [1, 2] }); // node-v0.11

@@ -6,7 +6,7 @@ sane-buffer
 
 Fix the `Buffer` constructor semantics to not break legacy code.  Unlike packages that
 polyfill the new API, this one polyfills both new (for older nodejs that is missing calls or whose
-calls behaved differently) and the old (for new nodejs that made breaking changes).
+calls behaved differently) and the old (for new nodejs that deprecated them).
 
 The module wrappers `Buffer` to support the old constructor API.  Safe behavior can be
 preserved by setting `require('sane-buffer').safe = true`.  The wrapper can be installed
