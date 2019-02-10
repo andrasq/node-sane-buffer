@@ -243,7 +243,7 @@ module.exports = {
             }
             if (SysBuffer.concat) {
                 OBuff._install();
-                t.ok(Buffer.concat([makeSysBuffer('A'), new OBuff('B')]) instanceof OBuff);
+                t.ok(Buffer.concat([makeSysBuffer('A'), makeSysBuffer('B')]) instanceof OBuff);
             }
 
             OBuffer._install();
@@ -278,6 +278,7 @@ module.exports = {
 
         'should access contents with subscript notation': function(t) {
             var buf = OBuffer("ABC");
+            t.equal(buf.length, 3);
             t.equal(buf[0], 65);
             t.equal(buf[1], 66);
             t.equal(buf[2], 67);
@@ -309,6 +310,40 @@ module.exports = {
 
         'should support byteLength': function(t) {
             t.equal(OBuffer.byteLength("hi\u9876"), 5);
+            t.done();
+        },
+
+        'should support keys and values': function(t) {
+            var buf = OBuffer("ABCD");
+            t.equal(buf.length, 4);
+            var keys = [], values = [];
+            // keys and values return iterators, which need for..of, introduced in 0.12
+            try { eval("for (var key of buf.keys()) keys.push(key);") } catch (e) { }
+            try { eval("for (var value of buf.values()) values.push(key);") } catch (e) { }
+            if (keys.length > 0) t.deepEqual(keys, [0, 1, 2, 3]);
+            if (values.length > 0) t.deepEqual(values, [65, 66, 67, 68]);
+            t.done();
+        },
+
+        'should support read and write': function(t) {
+            var buf = new OBuffer("oh hello world, have a good day.");
+
+            t.equal(buf.write("hit", 3, 2, 'utf8'), 2);
+            t.equal(buf.slice(1, 8).toString(), 'h hillo');
+            t.equal(buf.toString(undefined, 3, 3+2), 'hi');
+
+            buf.writeDoubleBE(1e6, 1);
+            t.equal(buf.readDoubleBE(1), 1e6);
+
+            t.done();
+        },
+
+        'should support toJSON': function(t) {
+            var buf = OBuffer([1, 2]);
+            var json = buf.toJSON();
+            t.equal(typeof json, 'object');
+            if (json.type) t.deepEqual(json, { type: 'Buffer', data: [1, 2] }); // node-v0.11
+            else t.deepEqual(json, [1, 2]);     // node-v0.10
             t.done();
         },
     },
