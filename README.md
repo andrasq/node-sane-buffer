@@ -76,7 +76,7 @@ Caveats
 -------
 
 - if `install()`-ing, only the global `Buffer` is wrappered.  Code that uses
-  `require('bufer').Buffer` will still get the unmodified builtin Buffer.
+  `require('buffer').Buffer` will still get the unmodified builtin Buffer.
 
 - if `install()`-ing, if I missed some ways a Buffer can be created it's possible that a system
   Buffer will be returned.  This buffer will fail an `instanceof Buffer` test, because
