@@ -15,7 +15,6 @@ var Buffer = require('buffer').Buffer;                  // inside this file, Buf
 var nodeVersion = parseInt(process.version.slice(1));   // version is mocked by unit tests
 
 module.exports = OBuffer;
-module.exports.Buffer = OBuffer;
 
 function OBuffer( arg, encOrOffs, length ) {
     // create as type Buffer, but patch it up to make it appear instanceof OBuffer
@@ -28,6 +27,8 @@ OBuffer.prototype.slice = function(base, bound) { return _typeconvert(Buffer.pro
 
 // copy class methods
 for (var k in Buffer) OBuffer[k] = Buffer[k];
+OBuffer.Buffer = OBuffer;
+OBuffer._Buffer = Buffer;
 
 // polyfills for builders on node versions that need it, each returning OBuffer
 OBuffer.from = _typewrapper('from', function(a, b, c) { return new OBuffer(a, b, c) });

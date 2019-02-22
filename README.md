@@ -50,6 +50,10 @@ leftover data from a different call, perhaps leaking data from a different user.
 return a buffer with all bytes cleared to zeros.  Whether every `new Buffer(1000000)` really
 needs to be pre-zeroed every time before being overwritten is an exercise left to the reader.
 
+### OBuffer._Buffer
+
+The Buffer class in effect when `sane-buffer` was loaded.
+
 ### OBuffer._install( )
 
 Change the global Buffer implementation to OBuffer.  Buffers created from this point on will
@@ -58,7 +62,8 @@ name, interoperate with Buffers, and are `instanceof Buffer`.  Reversible with `
 
 ### OBuffer._uninstall( )
 
-Restore the global Buffer to the original that it was when `sane-buffer` was loaded.
+Restore the global Buffer to the original that was in effect when `sane-buffer` was loaded
+(ie, back to OBuffer._Buffer).
 
 ### OBuffer._create( arg, [encodingOrOffset, [length]] )
 
