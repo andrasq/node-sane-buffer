@@ -10,7 +10,7 @@ var OBuffer = require('./');
 var nodeVersion = parseInt(process.version.slice(1));
 var realVersion = process.version;
 
-OBuffer._install();
+OBuffer.install();
 
 module.exports = {
     tearDown: function(done) {
@@ -19,15 +19,15 @@ module.exports = {
     },
 
     'should uninstall': function(t) {
-        OBuffer._uninstall();
+        OBuffer.uninstall();
         t.equal(Buffer, SysBuffer);
-        OBuffer._install();
+        OBuffer.install();
         t.done();
     },
 
     'should install': function(t) {
-        OBuffer._uninstall();
-        OBuffer._install();
+        OBuffer.uninstall();
+        OBuffer.install();
         t.equal(Buffer, OBuffer);
         t.done();
     },
@@ -235,7 +235,7 @@ module.exports = {
         },
 
         'should wrapper builders': function(t) {
-            OBuffer._uninstall();
+            OBuffer.uninstall();
 
             setVersion('v5.8.0');
             t.unrequire('./');
@@ -258,16 +258,16 @@ module.exports = {
                 t.ok(OBuff.allocUnsafeSlow(0) instanceof OBuff);
             }
             if (SysBuffer.concat) {
-                OBuff._install();
+                OBuff.install();
                 t.ok(Buffer.concat([makeSysBuffer('A'), makeSysBuffer('B')]) instanceof OBuff);
             }
 
-            OBuffer._install();
+            OBuffer.install();
             t.done();
         },
 
         'makes only Buffer instances into OBuffer': function(t) {
-            OBuffer._install();
+            OBuffer.install();
             var obj = new Date();
             // OBuffer.concat calls Buffer.concat and patches the result Buffer
             t.stubOnce(SysBuffer, 'concat', function() { return obj });

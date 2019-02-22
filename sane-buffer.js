@@ -37,9 +37,9 @@ OBuffer.allocUnsafeSlow = (nodeVersion >= 6 && Buffer.allocUnsafeSlow) ? functio
 OBuffer.concat = function(list, length) { return _typeconvert(Buffer.concat(list, length)) };
 
 // class properties and class methods
-OBuffer._safe = false;
-OBuffer._install = function() { global.Buffer = OBuffer }
-OBuffer._uninstall = function() { global.Buffer = Buffer }
+OBuffer.safe = false;
+OBuffer.install = function() { global.Buffer = OBuffer }
+OBuffer.uninstall = function() { global.Buffer = Buffer }
 OBuffer._create = function _create( arg, encOrOffs, length ) {
     // node through v9 supported the old constructor semantics, 10 and up deprecate it
     return (

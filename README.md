@@ -46,7 +46,7 @@ be cleared to zeroes.  Default is `false`, random bytes.
 
 The "unsafe" part of `Buffer` semantics was that `new Buffer(100)` returns 100 bytes that contains
 leftover data from a different call, perhaps leaking data from a different user.  Setting
-`OBuffer.safe = true` upon `_install` changes that behavior so that every `new Buffer(100)` will
+`OBuffer.safe = true` upon `install` changes that behavior so that every `new Buffer(100)` will
 return a buffer with all bytes cleared to zeros.  Whether every `new Buffer(1000000)` really
 needs to be pre-zeroed every time before being overwritten is an exercise left to the reader.
 
@@ -54,13 +54,13 @@ needs to be pre-zeroed every time before being overwritten is an exercise left t
 
 The Buffer class in effect when `sane-buffer` was loaded.
 
-### OBuffer._install( )
+### OBuffer.install( )
 
 Change the global Buffer implementation to OBuffer.  Buffers created from this point on will
 be of type `OBuffer` (for "old buffer", real clever huh).  OBuffers are Buffers by a different
-name, interoperate with Buffers, and are `instanceof Buffer`.  Reversible with `_uninstall`.
+name, interoperate with Buffers, and are `instanceof Buffer`.  Reversible with `uninstall`.
 
-### OBuffer._uninstall( )
+### OBuffer.uninstall( )
 
 Restore the global Buffer to the original that was in effect when `sane-buffer` was loaded
 (ie, back to OBuffer._Buffer).
@@ -75,10 +75,10 @@ version of nodejs.
 Caveats
 -------
 
-- if `_install`-ing, only the global `Buffer` is wrappered.  Code that uses
+- if `install()`-ing, only the global `Buffer` is wrappered.  Code that uses
   `require('bufer').Buffer` will still get the unmodified builtin Buffer.
 
-- if `_install`-ing, if I missed some ways a Buffer can be created it's possible that a system
+- if `install()`-ing, if I missed some ways a Buffer can be created it's possible that a system
   Buffer will be returned.  This buffer will fail an `instanceof Buffer` test, because
   installing shadows the system `Buffer` with `OBuffer`.
 
