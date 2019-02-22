@@ -18,11 +18,10 @@ and polyfills for the old Buffer constructor `new Buffer(10)`, `new Buffer("stri
 
 As with all things nodejs, your mileage may vary, buyer beware.
 
-    Buffer("test")
+    Buffer("test");
     // => [DEP0005] DeprecationWarning: Buffer() is deprecated
 
-    require('sane-buffer')._install();
-
+    Buffer = require('sane-buffer');
     Buffer("test");
     // => <Buffer 74 65 73 74>
 
@@ -69,8 +68,8 @@ Restore the global Buffer to the original that was in effect when `sane-buffer` 
 ### OBuffer._create( arg, [encodingOrOffset, [length]] )
 
 The factory used internally by the constructor to construct new Buffers.  The factory either
-uses `new Buffer` or calls a factory method, depending on which is supported in this version
-of nodejs.
+uses `new Buffer` or calls a factory method, depending on which is supported in the current
+version of nodejs.
 
 
 Caveats
