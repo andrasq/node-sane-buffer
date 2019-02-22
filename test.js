@@ -191,6 +191,14 @@ module.exports = {
                 t.ok(buf instanceof SysBuffer);
                 t.equal(buf.length, 7);
 
+                var buf = OBuffer.from(makeSysBuffer(""));
+                t.ok(buf instanceof SysBuffer);
+                t.equal(buf.length, 0);
+
+                var buf = OBuffer.from("");
+                t.ok(buf instanceof SysBuffer);
+                t.equal(buf.length, 0);
+
                 var buf = OBuffer.alloc(0);
                 t.ok(buf instanceof SysBuffer);
                 t.equal(buf.length, 0);
@@ -407,6 +415,8 @@ function _copyObject(to, from) {
 
 function makeSysBuffer(a, b, c) {
     // node-v4.4 and v5.8 had a weird from() that broke on strings with "not a typed array" error
+    // all node versions mis-handle Buffer(new Number(1)) and Buffer.alloc(new Number(1)):
+    //   0.10, 0.11 and 0.12 alloc 0 bytes, 4.4 on up throw an error
     if (nodeVersion < 10) return new SysBuffer(a, b, c);
     return (typeof a === 'number') ? SysBuffer.alloc(a) : SysBuffer.from(a, b, c);
 }
