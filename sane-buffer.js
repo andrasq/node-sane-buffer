@@ -1,5 +1,5 @@
 /*
- * Override Buffer globally to implement the legacy Buffer constructor.
+ * Change Buffer to implement the legacy Buffer constructor.
  * Convenient for running legacy code without having to rewrite it all first.
  *
  * Copyright (C) 2019 Andras Radics
