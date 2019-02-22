@@ -38,10 +38,6 @@ OBuffer.allocUnsafe = _typewrapper('allocUnsafe', function(n) { return new OBuff
 OBuffer.allocUnsafeSlow = (nodeVersion >= 6 && Buffer.allocUnsafeSlow) ? function(size) { return _typeconvert(Buffer.allocUnsafeSlow(size)) } : undefined;
 OBuffer.concat = function(list, length) { return _typeconvert(Buffer.concat(list, length)) };
 
-function _typeconvert(obj) { if (obj && obj.constructor === Buffer) obj.__proto__ = OBuffer.prototype; return obj }
-function _typewrapper(name, poly) { return (nodeVersion >= 6 && Buffer[name]) ? function(a, b, c) { return _typeconvert(Buffer[name](a, b, c)) } : poly }
-function _fill0(buf) { var len = buf.length; for (var i=0; i<len; i++) buf[i] = 0; return buf }
-
 // class properties and class methods
 OBuffer._safe = false;
 OBuffer._install = function() { return global.Buffer = OBuffer }
@@ -61,3 +57,12 @@ OBuffer._create = function _create( arg, encOrOffs, length ) {
     // handle everything else, including no-args errors, by the implementation (eg node-v8.2 allows objects)
     return new Buffer.from(arg, encOrOffs, length);
 }
+
+// monkeypatch the object to make it intanceof OBuffer
+function _typeconvert(obj) { if (obj && obj.constructor === Buffer) obj.__proto__ = OBuffer.prototype; return obj }
+
+// wrapper the function to return an OBuffer
+function _typewrapper(name, poly) { return (nodeVersion >= 6 && Buffer[name]) ? function(a, b, c) { return _typeconvert(Buffer[name](a, b, c)) } : poly }
+
+// polyfill for .fill(0)
+function _fill0(buf) { var len = buf.length; for (var i=0; i<len; i++) buf[i] = 0; return buf }
