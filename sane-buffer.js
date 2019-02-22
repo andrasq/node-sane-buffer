@@ -17,7 +17,7 @@ var nodeVersion = parseInt(process.version.slice(1));   // version is mocked by 
 module.exports = OBuffer;
 
 function OBuffer( arg, encOrOffs, length ) {
-    return _typeconvert(OBuffer._create(arg, encOrOffs, length));
+    return _typeconvert(OBuffer.create(arg, encOrOffs, length));
 }
 util.inherits(OBuffer, Buffer);
 
@@ -40,7 +40,7 @@ OBuffer.concat = function(list, length) { return _typeconvert(Buffer.concat(list
 OBuffer.safe = false;
 OBuffer.install = function() { global.Buffer = OBuffer }
 OBuffer.uninstall = function() { global.Buffer = Buffer }
-OBuffer._create = function _create( arg, encOrOffs, length ) {
+OBuffer.create = function create( arg, encOrOffs, length ) {
     // node through v9 supported the old constructor semantics, 10 and up deprecate it
     return (
         (nodeVersion < 10) ? (OBuffer.safe && _isNumber(arg)) ? _fill0(new Buffer(arg)) : new Buffer(arg, encOrOffs, length) :

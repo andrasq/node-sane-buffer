@@ -65,7 +65,7 @@ name, interoperate with Buffers, and are `instanceof Buffer`.  Reversible with `
 Restore the global Buffer to the original that was in effect when `sane-buffer` was loaded
 (ie, back to OBuffer._Buffer).
 
-### OBuffer._create( arg, [encodingOrOffset, [length]] )
+### OBuffer.create( arg, [encodingOrOffset, [length]] )
 
 The factory used internally by the constructor to construct new Buffers.  The factory either
 uses `new Buffer` or calls a factory method, depending on which is supported in the current
