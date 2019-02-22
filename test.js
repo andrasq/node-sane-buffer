@@ -191,6 +191,14 @@ module.exports = {
                 t.ok(buf instanceof SysBuffer);
                 t.equal(buf.length, 7);
 
+                var buf = OBuffer.alloc(0);
+                t.ok(buf instanceof SysBuffer);
+                t.equal(buf.length, 0);
+
+                var buf = OBuffer.allocUnsafe(0);
+                t.ok(buf instanceof SysBuffer);
+                t.equal(buf.length, 0);
+
                 OBuffer.safe = true;
                 var buf = new OBuffer(777);
                 t.equal(buf.length, 777);

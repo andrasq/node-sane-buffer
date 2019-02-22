@@ -11,7 +11,7 @@
   "scripts": {
     "prepublishOnly": "mv .trav* test.js .git/ar",
     "postpublish": "mv .git/ar/.trav* .git/ar/test.js .",
-    "test": "pwd ; ls -ls ; qnit test*.js",
+    "test": "qnit test*.js",
     "coverage": "nyc -r text -r lcov npm test",
     "clean": "rm -rf .nyc_output/ coverage/ npm-debug.log"
   }
